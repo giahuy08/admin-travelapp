@@ -5,14 +5,153 @@ import editFill from '@iconify/icons-eva/edit-fill';
 import { Link as RouterLink } from 'react-router-dom';
 import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 import moreVerticalFill from '@iconify/icons-eva/more-vertical-fill';
+import * as React from 'react';
 // material
 import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  Card,
+  Table,
+  Stack,
+  Avatar,
+  Button,
+  Checkbox,
+  TableRow,
+  TableBody,
+  TableCell,
+  Container,
+  Typography,
+  TableContainer,
+  TablePagination
+} from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import plusFill from '@iconify/icons-eva/plus-fill';
+import { useEffect} from 'react';
 
 // ----------------------------------------------------------------------
-
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '60%',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 export default function UserMoreMenu(props) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  const [openEditTour, setOpenEditTour] = React.useState(false);
+  const handleOpenEditTour = () => setOpenEditTour(true);
+  const handleCloseEditTour = () => setOpenEditTour(false);
+
+  const [enterprise, setEnterprise] = React.useState([]);
+  const [idEnterprise, setIDEnterprise] = React.useState(props.idEnterprise);
+
+  const [vehicle, setVehicle] = React.useState([]);
+  const [idVehicles, setidVehicles] = React.useState(props.idVehicles);
+
+  const [name, setName] = React.useState(props.name);
+  const [place, setPlace] = React.useState(props.place);
+  const [detail, setDetail] = React.useState(props.detail);
+  const [payment, setPayment] = React.useState(props.payment);
+  const [time, setTime] = React.useState(props.time);
+  const [ImagesTour, setImagesTour] = React.useState();
+
+  const [category, setCategory] = React.useState(props.category);
+  const [openCategory, setOpenCategory] = React.useState(false);
+
+  
+
+  const handleChangeCategory = (event) => {
+    setCategory(event.target.value);
+  };
+
+  const handleCloseCategory = () => {
+    setOpenCategory(false);
+  };
+
+  const handleOpenCategory = () => {
+    setOpenCategory(true);
+  };
+
+  //sửa lý edit tour
+  useEffect(() => {
+    (       
+            async () => {
+
+            const response = await fetch('http://localhost:5000/enterprise/getAllEnterprise',{
+                method: 'GET',
+                headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
+            });
+            
+            const content = await response.json();            
+            setEnterprise(content.data)
+      }    
+    )();
+},[])
+
+
+
+useEffect(() => {
+  (       
+          async () => {
+
+          const response = await fetch('http://localhost:5000/vehicle/getAllVehicle',{
+              method: 'GET',
+              headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
+          });
+          
+          const content = await response.json();            
+          setVehicle(content.data)
+    }    
+  )();
+},[])
+
+const clickEditTour = async () =>{
+  console.log({
+    idEnterprise,
+    idVehicles,
+    name,
+    place,
+    detail,
+    payment,
+    ImagesTour,
+    category,
+    time
+  })
+
+  let link = 'http://localhost:5000/tour/updateTour'
+  let addtour = new FormData()
+  addtour.append('id', props.id)
+  addtour.append('idEnterprise', idEnterprise)
+  addtour.append('idVehicles[]', idVehicles)
+  addtour.append('name', name)
+  addtour.append('place', place)
+  addtour.append('detail', detail)
+  addtour.append('payment', payment)
+  addtour.append('ImagesTour', ImagesTour)
+  addtour.append('category', category)
+  addtour.append('time', time)
+  const response = await fetch(link, {
+      method: 'PUT',
+      headers: {"Authorization": "Bearer " + localStorage.getItem("accessToken")},
+      body : addtour
+  });
+  const content = await response.json();
+  console.log(content.data)
+}
 
   const handleDeleteTour = () => {
 
@@ -55,9 +194,109 @@ export default function UserMoreMenu(props) {
           <ListItemIcon>
             <Icon icon={editFill} width={24} height={24} />
           </ListItemIcon>
-          <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
+          <ListItemText onClick={handleOpenEditTour} primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
       </Menu>
+
+
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={openEditTour}
+        onClose={handleCloseEditTour}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 0,
+        }}
+      >
+        
+        <Fade in={openEditTour}>
+          <Box sx={style}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Edit Tour
+            </Typography>
+
+            <Autocomplete
+              value={enterprise.map((e) => {if(idEnterprise == e._id) return (e.name)})}                     
+              style={{marginTop: '10px'}}
+              id="free-solo-demo"
+              disableClearable             
+              options={enterprise.map((e) => e.name)}
+              renderInput={(params) => <TextField {...params} label="Eterprise" />}
+              onChange={(event, newValue) => {
+                enterprise.map((enterprise) => {if(newValue == enterprise.name) setIDEnterprise(enterprise._id) 
+                })
+                console.log(idEnterprise)
+              }}
+            />
+
+          <Autocomplete
+            value={vehicle.map((v) => {if(idVehicles == v._id) return (v.name)})}
+            style={{marginTop: '10px'}}
+            id="free-solo-demo"
+            disableClearable 
+            options={vehicle.map((vehicle) => vehicle.name)}
+            renderInput={(params) => <TextField {...params} label="Vehicle" />}
+            onChange={(event, newValue) => {
+              vehicle.map((vehicle) => {if(newValue == vehicle.name) setidVehicles(vehicle._id) 
+              })
+              console.log(idVehicles)
+            }}
+          />
+
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Name" variant="outlined" value={name} onChange={(event)=>setName(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Place" variant="outlined" value={place} onChange={(event)=>setPlace(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} multiline rows={2} id="outlined-basic" label="Detail" variant="outlined" value={detail} onChange={(event)=>setDetail(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Payment(VNĐ)" variant="outlined" value={payment} onChange={(event)=>setPayment(event.target.value)}/>
+
+
+          <FormControl sx={{marginTop: '10px', width: '100%' }}>
+          <InputLabel id="demo-controlled-open-select-label">Loại</InputLabel>
+          <Select
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            open={openCategory}
+            onClose={handleCloseCategory}
+            onOpen={handleOpenCategory}
+            value={category}
+            label="Age"
+            onChange={handleChangeCategory}
+          >
+            <MenuItem value={0}>
+              <em>Khác</em>
+            </MenuItem>         
+            <MenuItem value={1}>Biển-Đảo</MenuItem>
+            <MenuItem value={2}>Núi</MenuItem>
+          </Select>
+        </FormControl>
+
+        <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Time" variant="outlined" value={time} onChange={(event)=>setTime(event.target.value)}/>
+
+        <div class="input-file">
+        <input type="file" name="file" id="file" onChange={(event)=>setImagesTour(event.target.files[0])}/>
+        <label for="file" class="input-label">
+          <i class="fas fa-cloud-upload-alt icon-upload"><CloudUploadIcon/></i>
+        </label>
+      </div>
+
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Nhớ điền đầy đủ thông tin nha!
+            </Typography>
+
+            <Button
+            variant="contained"
+            component={RouterLink}
+            to="#"
+            startIcon={<Icon icon={plusFill} />}
+            onClick={clickEditTour}
+          >
+            Save
+          </Button>
+
+          </Box>
+        </Fade>
+      </Modal> 
     </>
   );
 }
