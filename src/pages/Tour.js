@@ -276,7 +276,7 @@ const clickAddTour = async () =>{
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tours.length) : 0;
 
   const filteredUsers = applySortFilter(tours, getComparator(order, orderBy), filterName);
 
@@ -390,7 +390,7 @@ const clickAddTour = async () =>{
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={tours.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
