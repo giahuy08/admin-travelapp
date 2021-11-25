@@ -1,5 +1,6 @@
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
+import * as React from 'react';
 // import { sentenceCase } from 'change-case';
 import { useState ,useEffect} from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
@@ -21,6 +22,17 @@ import {
   TableContainer,
   TablePagination
 } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -29,7 +41,8 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import USERLIST from '../_mocks_/user';
-
+//css
+import AddTour from './AddTour.css'
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -53,6 +66,13 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 
+
+
+
+
+
+        
+
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -72,6 +92,18 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '60%',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
 export default function Tour() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -79,7 +111,112 @@ export default function Tour() {
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  
 
+
+  //biến add tour
+  const [openAddTour, setOpenAddTour] = React.useState(false);
+  const handleOpenAddTour = () => setOpenAddTour(true);
+  const handleCloseAddTour = () => setOpenAddTour(false);
+  
+  const [enterprise, setEnterprise] = React.useState([]);
+  const [idEnterprise, setIDEnterprise] = React.useState('');
+
+  const [vehicle, setVehicle] = React.useState([]);
+  const [idVehicles, setidVehicles] = React.useState([]);
+
+  const [name, setName] = React.useState('');
+  const [place, setPlace] = React.useState('');
+  const [detail, setDetail] = React.useState('');
+  const [payment, setPayment] = React.useState('');
+  const [time, setTime] = React.useState('');
+  const [ImagesTour, setImagesTour] = React.useState([]);
+
+  const [category, setCategory] = React.useState(0);
+  const [openCategory, setOpenCategory] = React.useState(false);
+
+  const handleChangeCategory = (event) => {
+    setCategory(event.target.value);
+  };
+
+  const handleCloseCategory = () => {
+    setOpenCategory(false);
+  };
+
+  const handleOpenCategory = () => {
+    setOpenCategory(true);
+  };
+
+  //sửa lý add tour
+  useEffect(() => {
+    (       
+            async () => {
+
+            const response = await fetch('http://localhost:5000/enterprise/getAllEnterprise',{
+                method: 'GET',
+                headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
+            });
+            
+            const content = await response.json();            
+            setEnterprise(content.data)
+      }    
+    )();
+},[])
+
+
+
+useEffect(() => {
+  (       
+          async () => {
+
+          const response = await fetch('http://localhost:5000/vehicle/getAllVehicle',{
+              method: 'GET',
+              headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
+          });
+          
+          const content = await response.json();            
+          setVehicle(content.data)
+    }    
+  )();
+},[])
+
+
+const clickAddTour = async () =>{
+  console.log({
+    idEnterprise,
+    idVehicles,
+    name,
+    place,
+    detail,
+    payment,
+    ImagesTour,
+    category,
+    time
+  })
+
+  let link = 'http://localhost:5000/tour/createTour'
+  let addtour = new FormData()
+  addtour.append('idEnterprise', idEnterprise)
+  addtour.append('idVehicles[]', idVehicles)
+  addtour.append('name', name)
+  addtour.append('place', place)
+  addtour.append('detail', detail)
+  addtour.append('payment', payment)
+  addtour.append('ImagesTour', ImagesTour)
+  addtour.append('category', category)
+  addtour.append('time', time)
+  const response = await fetch(link, {
+      method: 'POST',
+      headers: {"Authorization": "Bearer " + localStorage.getItem("accessToken")},
+      body : addtour
+  });
+  const content = await response.json();
+  console.log(content.data)
+}
+
+
+
+  //
   const [tours, setTours] = useState([]);
   
   useEffect(() => {
@@ -140,7 +277,7 @@ export default function Tour() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tours.length) : 0;
 
   const filteredUsers = applySortFilter(tours, getComparator(order, orderBy), filterName);
 
@@ -158,6 +295,7 @@ export default function Tour() {
             component={RouterLink}
             to="#"
             startIcon={<Icon icon={plusFill} />}
+            onClick={handleOpenAddTour}
           >
             New Tour 
           </Button>
@@ -226,7 +364,7 @@ export default function Tour() {
                           </TableCell>
 
                           <TableCell align="right">
-                            <UserMoreMenu id={_id}/>
+                            <UserMoreMenu id={_id} name={name} detail={row.detail} payment={payment} time={time} place={place} category={row.category} idEnterprise={row.idEnterprise} idVehicles={row.idVehicles}/>
                           </TableCell>
                         </TableRow>
                       );
@@ -253,7 +391,7 @@ export default function Tour() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={tours.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -261,6 +399,103 @@ export default function Tour() {
           />
         </Card>
       </Container>
+      
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={openAddTour}
+        onClose={handleCloseAddTour}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={openAddTour}>
+          <Box sx={style}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Add New Tour
+            </Typography>
+
+            <Autocomplete
+              style={{marginTop: '10px'}}
+              id="free-solo-demo"
+              disableClearable             
+              options={enterprise.map((enterprise) => enterprise.name)}
+              renderInput={(params) => <TextField {...params} label="Eterprise" />}
+              onChange={(event, newValue) => {
+                enterprise.map((enterprise) => {if(newValue == enterprise.name) setIDEnterprise(enterprise._id) 
+                })
+                console.log(idEnterprise)
+              }}
+            />
+
+          <Autocomplete
+            style={{marginTop: '10px'}}
+            id="free-solo-demo"
+            disableClearable 
+            options={vehicle.map((vehicle) => vehicle.name)}
+            renderInput={(params) => <TextField {...params} label="Vehicle" />}
+            onChange={(event, newValue) => {
+              vehicle.map((vehicle) => {if(newValue == vehicle.name) setidVehicles(vehicle._id) 
+              })
+              console.log(idVehicles)
+            }}
+          />
+
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Name" variant="outlined" value={name} onChange={(event)=>setName(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Place" variant="outlined" value={place} onChange={(event)=>setPlace(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} multiline rows={2} id="outlined-basic" label="Detail" variant="outlined" value={detail} onChange={(event)=>setDetail(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Payment(VNĐ)" variant="outlined" value={payment} onChange={(event)=>setPayment(event.target.value)}/>
+
+
+          <FormControl sx={{marginTop: '10px', width: '100%' }}>
+          <InputLabel id="demo-controlled-open-select-label">Loại</InputLabel>
+          <Select
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            open={openCategory}
+            onClose={handleCloseCategory}
+            onOpen={handleOpenCategory}
+            value={category}
+            label="Age"
+            onChange={handleChangeCategory}
+          >
+            <MenuItem value={0}>
+              <em>Khác</em>
+            </MenuItem>         
+            <MenuItem value={1}>Biển-Đảo</MenuItem>
+            <MenuItem value={2}>Núi</MenuItem>
+          </Select>
+        </FormControl>
+
+        <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Time" variant="outlined" value={time} onChange={(event)=>setTime(event.target.value)}/>
+
+        <div class="input-file">
+        <input type="file" name="file" id="file" onChange={(event)=>setImagesTour(event.target.files[0])}/>
+        <label for="file" class="input-label">
+          <i class="fas fa-cloud-upload-alt icon-upload"><CloudUploadIcon/></i>
+        </label>
+      </div>
+
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Nhớ điền đầy đủ thông tin nha!
+            </Typography>
+
+            <Button
+            variant="contained"
+            component={RouterLink}
+            to="#"
+            startIcon={<Icon icon={plusFill} />}
+            onClick={clickAddTour}
+          >
+            ADD
+          </Button>
+
+          </Box>
+        </Fade>
+      </Modal>
+      
     </Page>
   );
 }
