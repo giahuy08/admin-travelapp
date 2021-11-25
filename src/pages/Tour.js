@@ -86,6 +86,7 @@ export default function Tour() {
     callApi(
       `tour/getAllTour?search&skip&limit`,
       "GET"
+      
     ).then((res) => {
       console.log(res.data.data)
       setTours(res.data.data);
