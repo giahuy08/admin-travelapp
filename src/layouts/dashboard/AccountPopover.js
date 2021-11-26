@@ -31,7 +31,9 @@ const MENU_OPTIONS = [
     linkTo: '#'
   }
 ];
+const clickLogout = () => {
 
+}
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
@@ -110,7 +112,7 @@ export default function AccountPopover() {
         ))}
 
         <Box sx={{ p: 2, pt: 1.5 }}>
-          <Button fullWidth color="inherit" variant="outlined">
+          <Button fullWidth color="inherit" variant="outlined" onclick={clickLogout}>
             Logout
           </Button>
         </Box>

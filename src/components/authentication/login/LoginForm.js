@@ -37,7 +37,7 @@ export default function LoginForm() {
         email: values.email,
         password: values.password,
       };
-      callApi(`user/login`, "POST", data)
+      callApi(`user/loginAdmin`, "POST", data)
         .then((res) => {
           console.log(res);
           console.log(res.data.data.token)

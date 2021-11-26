@@ -51,6 +51,7 @@ const TABLE_HEAD = [
   { id: 'time', label: 'Time', alignRight: false },
   { id: 'star', label: 'Star', alignRight: false },
   { id: 'place', label: 'Place', alignRight: false },
+  { id: 'deleted', label: 'Deleted', alignRight: false },
   { id: '' }
 ];
 
@@ -212,6 +213,13 @@ const clickAddTour = async () =>{
   });
   const content = await response.json();
   console.log(content.data)
+  if(content.data){
+    window.confirm('Add thành công !')
+    window.location.reload()
+  }else {
+    window.alert('Thất bại !')
+  }
+  
 }
 
 
@@ -221,7 +229,7 @@ const clickAddTour = async () =>{
   
   useEffect(() => {
     callApi(
-      `tour/getAllTour?search&skip&limit`,
+      `tour/getAllTourWithDeleted?search&skip&limit`,
       "GET"
     ).then((res) => {
       console.log(res.data.data)
@@ -323,7 +331,7 @@ const clickAddTour = async () =>{
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, name,payment,time,place,star,imagesTour } = row;
+                      const { _id, name,payment,time,place,star,imagesTour, deleted } = row;
                       const isItemSelected = selected.indexOf(name) !== -1;
 
                       return (
@@ -341,7 +349,7 @@ const clickAddTour = async () =>{
                               onChange={(event) => handleClick(event, name)}
                             />
                           </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
+                          <TableCell component="th" scope="row" padding="none" sx={{ maxWidth: 400 }}>
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar alt={name} src={imagesTour[0]} />
                               <Typography variant="subtitle2" noWrap>
@@ -350,20 +358,30 @@ const clickAddTour = async () =>{
                             </Stack>
                           </TableCell>
                           {/* {/* <TableCell align="left">{company}</TableCell> */}
-                          <TableCell align="left">{payment}</TableCell> 
+                          <TableCell align="left">{payment.toLocaleString('en-US')}  VNĐ</TableCell> 
                           <TableCell align="left">{time}</TableCell> 
-                          <TableCell align="left">{star}</TableCell> 
-                          <TableCell align="left">
+                          <TableCell align="left">{star.toFixed(2)}</TableCell> 
+                          {/* <TableCell align="left">
                             <Label
                               variant="ghost"
                               color={'success'}
                             >
                               {place}
                             </Label>
+                          </TableCell> */}
+                          <TableCell align="left">{place}</TableCell> 
+
+                          <TableCell align="left">
+                            <Label
+                              variant="ghost"
+                              color={(deleted == true && 'error') || 'success'}
+                            >
+                              {deleted == true && 'Blocked' || 'Online'}
+                            </Label>
                           </TableCell>
 
                           <TableCell align="right">
-                            <UserMoreMenu id={_id} name={name} detail={row.detail} payment={payment} time={time} place={place} category={row.category} idEnterprise={row.idEnterprise} idVehicles={row.idVehicles}/>
+                            <UserMoreMenu id={_id} name={name} detail={row.detail} payment={payment} time={time} place={place} category={row.category} idEnterprise={row.idEnterprise} idVehicles={row.idVehicles} deleted={deleted}/>
                           </TableCell>
                         </TableRow>
                       );

@@ -18,14 +18,19 @@ const sidebarConfig = [
     icon: getIcon(pieChart2Fill)
   },
   {
-    title: 'user',
+    title: 'User',
     path: '/dashboard/user',
     icon: getIcon(peopleFill)
   },
   {
-    title: 'tour',
+    title: 'Tour',
     path: '/dashboard/tour',
     icon: getIcon(trademark)
+  },
+  {
+    title: 'Book Tour',
+    path: '/dashboard/booktour',
+    icon: getIcon(shoppingBagFill)
   },
   // {
   //   title: 'product',

@@ -38,19 +38,20 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
-import UserMenu from '../components/_dashboard/user/UserMenu.js';
+import BookTourMenu from '../components/_dashboard/user/BookTourMenu.js';
 //
 import USERLIST from '../_mocks_/user';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name', alignRight: false },
+  { id: 'nameTour', label: 'Name Tour', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
-  { id: 'phone', label: 'Phone', alignRight: false },
-  { id: 'address', label: 'Address', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'deleted', label: 'Deleted', alignRight: false },
+  { id: 'nameUser', label: 'Name User', alignRight: false },
+  { id: 'payment', label: 'Payment(VNĐ)', alignRight: false , align: 'right', format: (value) => value.toLocaleString('en-US')},
+  { id: 'startDate', label: 'Start Date', alignRight: false },
+  { id: 'endDate', label: 'End Date', alignRight: false },
+  { id: 'status', label: 'Status', alignRight: false },
   { id: '' }
 ];
 
@@ -81,24 +82,14 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '60%',
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
 
-export default function User() {
+
+export default function BookTour() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -107,63 +98,19 @@ export default function User() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   //lấy danh sách user
-  const [allUser, setAllUser] = useState([]);
+  const [allBookTour, setAllBookTour] = useState([]);
   
   useEffect(() => {
     callApi(
-      `admin/getAllUserWithDeleted`,
+      `booktour/getAllBookTour`,
       "GET"
     ).then((res) => {
       console.log(res.data.data)
-      setAllUser(res.data.data);
+      setAllBookTour(res.data.data);
     });
   }, []);
 
-  //phần add user
-  const [openAddUser, setOpenAddUser] = useState(false);
-  const handleOpenAddUser = () => setOpenAddUser(true);
-  const handleCloseAddUser = () => setOpenAddUser(false);
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [verify, setVerify] = useState(false);
-
-  const clickAddUser = async () =>{
-    console.log({
-      email,
-      password,
-      phone,
-      name,
-      address,
-      verify
-    })
   
-    let link = 'http://localhost:5000/admin/createUser'
-    
-    const response = await fetch(link, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem("accessToken")},
-        body : JSON.stringify({
-          email,
-          password,
-          phone,
-          name,
-          address,
-          verify
-        })
-    });
-    const content = await response.json();
-    console.log(content.data)
-    if(content.data){
-      window.confirm('Add thành công !')
-      window.location.reload()
-    }else {
-      window.alert('Thất bại !')
-    }
-  }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -173,7 +120,7 @@ export default function User() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = allUser.map((n) => n._id);
+      const newSelecteds = allBookTour.map((n) => n._id);
       setSelected(newSelecteds);
       return;
     }
@@ -211,28 +158,22 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - allUser.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - allBookTour.length) : 0;
 
-  const filteredUsers = applySortFilter(allUser, getComparator(order, orderBy), filterName);
+  const filteredBookTour = applySortFilter(allBookTour, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredUsers.length === 0;
+  const isUserNotFound = filteredBookTour.length === 0;
+
+  var formatter = new Intl.DateTimeFormat("en-US");
 
   return (
     <Page title="User | Minimal-UI">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User {allUser.length}
+            Book Tour {allBookTour.length}
           </Typography>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<Icon icon={plusFill} />}
-            onClick={handleOpenAddUser}
-          >
-            New User
-          </Button>
+          
         </Stack>
 
         <Card>
@@ -249,16 +190,16 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={allUser.length}
+                  rowCount={allBookTour.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers
+                  {filteredBookTour
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, name, phone, deleted, email, avatar, role, address } = row;
+                      const { _id, finalpayment, status, startDate, endDate, idUser, idTour } = row;
                       const isItemSelected = selected.indexOf(_id) !== -1;
 
                       return (
@@ -276,29 +217,30 @@ export default function User() {
                               onChange={(event) => handleClick(event, _id)}
                             />
                           </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
+                          <TableCell component="th" scope="row" padding="none" sx={{ maxWidth: 350 }}>
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={_id} src={avatar} />
+                              <Avatar alt={_id} src={row.tour.imagesTour[0]} />                            
                               <Typography variant="subtitle2" noWrap>
-                                {name}
+                                {row.tour.name}                              
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left">{email}</TableCell>
-                          <TableCell align="left">{phone}</TableCell>
-                          <TableCell align="left">{address}</TableCell>
-                          <TableCell align="left">{role==0 ? 'Khách hàng' : 'Admin'}</TableCell>
+                          <TableCell align="left" sx={{ maxWidth: 180 }}>{row.user.email}</TableCell>
+                          <TableCell align="left">{row.user.name}</TableCell>
+                          <TableCell align="left" >{finalpayment.toLocaleString('en-US')}  VNĐ</TableCell>
+                          <TableCell align="left" >{new Date(startDate).toISOString('vi-VN').slice(0, 10)}</TableCell>
+                          <TableCell align="left">{new Date(endDate).toISOString('vi-VN').slice(0, 10)}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
-                              color={(deleted == true && 'error') || 'success'}
+                              color={(status == 1 && 'success') || (status == 2 && 'error') || 'info'}
                             >
-                              {deleted == true && 'Blocked' || 'Online'}
+                              {(status == 1 && 'Đã Đặt') || (status == 2 && 'Đã Hủy') || 'Đang chờ'}
                             </Label>
                           </TableCell>
 
                           <TableCell align="right">
-                            <UserMenu id={_id} name={name} phone={phone} email={email} address={address} deleted={deleted}/>
+                            <BookTourMenu id={_id} status={status}/>
                           </TableCell>
                         </TableRow>
                       );
@@ -325,57 +267,14 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={allUser.length}
+            count={allBookTour.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
-      </Container>
-
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={openAddUser}
-        onClose={handleCloseAddUser}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={openAddUser}>
-          <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Add User
-            </Typography>
-
-            
-
-          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Name" variant="outlined" value={name} onChange={(event)=>setName(event.target.value)}/>
-          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="email" label="Email" variant="outlined" value={email} onChange={(event)=>setEmail(event.target.value)}/>
-          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="password" label="Password" variant="outlined" value={password} onChange={(event)=>setPassword(event.target.value)}/>
-          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="number" label="Phone" variant="outlined" value={phone} onChange={(event)=>setPhone(event.target.value)}/>
-          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Address" variant="outlined" value={address} onChange={(event)=>setAddress(event.target.value)}/>    
-        
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Nhớ điền đầy đủ thông tin nha!
-            </Typography>
-
-            <Button
-            variant="contained"
-            component={RouterLink}
-            to="#"
-            startIcon={<Icon icon={plusFill} />}
-            onClick={clickAddUser}
-          >
-            ADD
-          </Button>
-
-          </Box>
-        </Fade>
-      </Modal>
+      </Container>   
 
     </Page>
   );
