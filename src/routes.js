@@ -10,7 +10,7 @@ import Products from './pages/Products';
 import Blog from './pages/Blog';
 import User from './pages/User';
 import Tour from './pages/Tour';
-
+import BookTour from './pages/BookTour';
 
 import NotFound from './pages/Page404';
 
@@ -38,8 +38,8 @@ export default function Router() {
         { path: 'user', element: <User /> },
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
-        { path: 'tour', element: < Tour/>}
-        
+        { path: 'tour', element: < Tour/>},
+        { path: 'booktour', element: < BookTour/>}
       ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }

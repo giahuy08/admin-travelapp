@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import callApi from 'src/api/apiService'
 import editFill from '@iconify/icons-eva/edit-fill';
 import { Link as RouterLink } from 'react-router-dom';
+import alertCircleOutline from '@iconify/icons-eva/alert-circle-outline';
 import trash2Outline from '@iconify/icons-eva/trash-2-outline';
 import moreVerticalFill from '@iconify/icons-eva/more-vertical-fill';
 import * as React from 'react';
@@ -35,6 +36,8 @@ import Select from '@mui/material/Select';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { useEffect} from 'react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
 // ----------------------------------------------------------------------
 const style = {
@@ -64,7 +67,7 @@ export default function UserMoreMenu(props) {
   const [address, setAddress] = useState(props.address);
   const [verify, setVerify] = useState(true);
   const [id, setID] = useState(props.id);
-
+  const [deleted, setDeleted] = useState(props.deleted);
   
 
   
@@ -97,13 +100,50 @@ const clickEditUser = async () =>{
   });
   const content = await response.json();
   console.log(content.data)
+  if(content.data){
+    window.confirm('Save thành công !')
+    window.location.reload()
+  }else {
+    window.alert('Thất bại !')
+  }
 }
+  
 
   const handleDeleteUser = () => {
 
     console.log(localStorage.getItem("accessToken"))
 
+    callApi(`admin/deleteForceUser?id=${props.id}`, "DELETE")
+      .then((res) => {
+        console.log(res);
+        window.location.reload()
+        
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleBlockUser = () => {
+
+    console.log(localStorage.getItem("accessToken"))
+
     callApi(`admin/deleteUser?id=${props.id}`, "DELETE")
+      .then((res) => {
+        console.log(res);
+        window.location.reload()
+        
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleUnblockUser = () => {
+
+    console.log(localStorage.getItem("accessToken"))
+
+    callApi(`admin/restoreUser?id=${props.id}`, "POST")
       .then((res) => {
         console.log(res);
         window.location.reload()
@@ -135,6 +175,18 @@ const clickEditUser = async () =>{
           </ListItemIcon>
           <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} onClick={handleDeleteUser}/>
         </MenuItem>
+        {deleted == true && <MenuItem sx={{ color: 'text.secondary' }}>
+          <ListItemIcon>
+            <Icon icon={alertCircleOutline} width={24} height={24} />
+          </ListItemIcon>
+          <ListItemText primary="Unblock" primaryTypographyProps={{ variant: 'body2' }} onClick={handleUnblockUser}/>
+        </MenuItem> || <MenuItem sx={{ color: 'text.secondary' }}>
+          <ListItemIcon>
+            <Icon icon={alertCircleOutline} width={24} height={24} />
+          </ListItemIcon>
+          <ListItemText primary="Block" primaryTypographyProps={{ variant: 'body2' }} onClick={handleBlockUser}/>
+        </MenuItem>}
+        
 
         <MenuItem component={RouterLink} to="#" sx={{ color: 'text.secondary' }}>
           <ListItemIcon>
