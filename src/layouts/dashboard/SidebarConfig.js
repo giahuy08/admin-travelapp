@@ -42,11 +42,11 @@ const sidebarConfig = [
     path: '/login',
     icon: getIcon(lockFill)
   },
-  {
-    title: 'register',
-    path: '/register',
-    icon: getIcon(personAddFill)
-  },
+  // {
+  //   title: 'register',
+  //   path: '/register',
+  //   icon: getIcon(personAddFill)
+  // },
   {
     title: 'Not found',
     path: '/404',
