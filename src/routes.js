@@ -13,6 +13,7 @@ import Tour from './pages/Tour';
 import BookTour from './pages/BookTour';
 
 import NotFound from './pages/Page404';
+import Discount from './pages/Discount';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,8 @@ export default function Router() {
         { path: 'products', element: <Products /> },
         { path: 'blog', element: <Blog /> },
         { path: 'tour', element: < Tour/>},
-        { path: 'booktour', element: < BookTour/>}
+        { path: 'booktour', element: < BookTour/>},
+        { path: 'discount', element: < Discount/>}
       ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }

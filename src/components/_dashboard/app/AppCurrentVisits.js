@@ -33,17 +33,17 @@ const ChartWrapperStyle = styled('div')(({ theme }) => ({
 
 const CHART_DATA = [4344, 5435, 1443, 4443];
 
-export default function AppCurrentVisits() {
+export default function AppCurrentVisits(props) {
   const theme = useTheme();
 
   const chartOptions = merge(BaseOptionChart(), {
     colors: [
       theme.palette.primary.main,
-      theme.palette.info.main,
+      // theme.palette.info.main,
       theme.palette.warning.main,
       theme.palette.error.main
     ],
-    labels: ['America', 'Asia', 'Europe', 'Africa'],
+    labels: ['Complete', 'Await', 'Cancel'],
     stroke: { colors: [theme.palette.background.paper] },
     legend: { floating: true, horizontalAlign: 'center' },
     dataLabels: { enabled: true, dropShadow: { enabled: false } },
@@ -63,9 +63,9 @@ export default function AppCurrentVisits() {
 
   return (
     <Card>
-      <CardHeader title="Current Visits" />
+      <CardHeader title="Statistic Book Tour" />
       <ChartWrapperStyle dir="ltr">
-        <ReactApexChart type="pie" series={CHART_DATA} options={chartOptions} height={280} />
+        <ReactApexChart type="pie" series={props.totalStatisticBookTour} options={chartOptions} height={280} />
       </ChartWrapperStyle>
     </Card>
   );

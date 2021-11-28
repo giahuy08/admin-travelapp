@@ -40,12 +40,16 @@ export default function LoginForm() {
       callApi(`user/loginAdmin`, "POST", data)
         .then((res) => {
           console.log(res);
-          console.log(res.data.data.token)
+          console.log(res.data.data.token)       
           localStorage.setItem("accessToken",res.data.data.token)
+          localStorage.setItem("name",res.data.data.user.name)
+          localStorage.setItem("email",res.data.data.user.email)
           navigate('/dashboard', { replace: true });
+          
          
         })
         .catch((err) => {
+          window.alert('Sai mật khẩu hoặc email !')
             console.log(err);
         });
     }
