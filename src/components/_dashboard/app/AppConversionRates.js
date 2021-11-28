@@ -8,10 +8,32 @@ import { fNumber } from '../../../utils/formatNumber';
 import { BaseOptionChart } from '../../charts';
 
 // ----------------------------------------------------------------------
+import callApi from 'src/api/apiService';
+import { useEffect, useState } from 'react';
 
 const CHART_DATA = [{ data: [400, 430, 448, 470, 540, 580, 690, 1100, 1200, 1380] }];
 
 export default function AppConversionRates() {
+  const [data,setData] =useState([])
+  const [name,setName] =useState([])
+ 
+  console.log(data)
+  useEffect(async () => {
+    await callApi(
+      `statistic/getStatisticByData`,
+      "GET"
+    ).then((res) => {
+      const place = res.data.data.statistictour
+      const placeData = place.map((row, a, n) => { return row['countbooktour'] })
+      const nameData = place.map((row, a, n) => { return row['nameTour'] })
+      
+      setData(placeData);
+      
+      setName(nameData)
+
+      
+    });
+  }, []);
   const chartOptions = merge(BaseOptionChart(), {
     tooltip: {
       marker: { show: false },
@@ -27,25 +49,16 @@ export default function AppConversionRates() {
     },
     xaxis: {
       categories: [
-        'Italy',
-        'Japan',
-        'China',
-        'Canada',
-        'France',
-        'Germany',
-        'South Korea',
-        'Netherlands',
-        'United States',
-        'United Kingdom'
+        ...name
       ]
     }
   });
 
   return (
     <Card>
-      <CardHeader title="Conversion Rates" subheader="(+43%) than last year" />
+      <CardHeader title="Statistic Tour" subheader="" />
       <Box sx={{ mx: 3 }} dir="ltr">
-        <ReactApexChart type="bar" series={CHART_DATA} options={chartOptions} height={364} />
+        <ReactApexChart type="bar" series={[{ data: data }]} options={chartOptions} height={364} />
       </Box>
     </Card>
   );

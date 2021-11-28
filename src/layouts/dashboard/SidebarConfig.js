@@ -32,6 +32,11 @@ const sidebarConfig = [
     path: '/dashboard/booktour',
     icon: getIcon(shoppingBagFill)
   },
+  {
+    title: 'Discount',
+    path: '/dashboard/discount',
+    icon: getIcon(fileTextFill)
+  },
   // {
   //   title: 'product',
   //   path: '/dashboard/products',

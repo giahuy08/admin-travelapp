@@ -38,7 +38,7 @@ import Label from '../components/Label';
 import Scrollbar from '../components/Scrollbar';
 import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
-import BookTourMenu from '../components/_dashboard/user/BookTourMenu.js';
+import DiscountMenu from '../components/_dashboard/user/DiscountMenu.js';
 //
 import USERLIST from '../_mocks_/user';
 
@@ -46,11 +46,10 @@ import USERLIST from '../_mocks_/user';
 
 const TABLE_HEAD = [
   { id: 'nameTour', label: 'Name Tour', alignRight: false },
-  { id: 'email', label: 'Email', alignRight: false },
-  { id: 'nameUser', label: 'Name User', alignRight: false },
-  { id: 'payment', label: 'Payment(VNĐ)', alignRight: false , align: 'right', format: (value) => value.toLocaleString('en-US')},
-  { id: 'startDate', label: 'Start Date', alignRight: false },
-  { id: 'endDate', label: 'End Date', alignRight: false },
+  { id: 'code', label: 'Code', alignRight: false },
+  { id: 'discount', label: 'Discount', alignRight: false },
+  { id: 'startDiscount', label: 'Start Discount', alignRight: false },
+  { id: 'endDiscount', label: 'End Discount', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' }
 ];
@@ -82,14 +81,24 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.nameTour.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '60%',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
 
-
-export default function BookTour() {
+export default function Discount() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -97,19 +106,74 @@ export default function BookTour() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  //
+  const [openAddDiscount, setOpenAddDiscount] = useState(false);
+  const handleOpenAddDiscount = () => setOpenAddDiscount(true);
+  const handleCloseAddDiscount = () => setOpenAddDiscount(false);
+  
+  //cách biến thêm discount
+  const [discount, setDiscount] = useState('');
+  const [code, setCode] = useState('');
+  const [idTour, setIDTour] = useState('');
+  const [startDiscount, setStartDiscount] = useState('');
+  const [endDiscount, setEndDiscount] = useState('');
+  //add discount
+  const clickAddDiscount = async () =>{
+    console.log({
+        idTour,
+        code,
+        discount,
+        startDiscount,
+        endDiscount
+    })
+  
+    let link = 'http://localhost:5000/discount/createDiscount'
+    
+    const response = await fetch(link, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem("accessToken")},
+        body : JSON.stringify({
+            idTour,
+            code,
+            discount,
+            startDiscount,
+            endDiscount
+        })
+    });
+    const content = await response.json();
+    console.log(content.data)
+    if(content.data){
+      window.confirm('Add thành công !')
+      window.location.reload()
+    }else {
+      window.alert('Thất bại !')
+    }
+  }
+
   //lấy danh sách user
-  const [allBookTour, setAllBookTour] = useState([]);
+  const [allDiscount, setAllDiscount] = useState([]);
   
   useEffect(() => {
     callApi(
-      `booktour/getAllBookTour`,
+      `discount/getAllDiscount`,
       "GET"
     ).then((res) => {
       console.log(res.data.data)
-      setAllBookTour(res.data.data);
+      setAllDiscount(res.data.data);
     });
   }, []);
-
+  //lấy danh sách tour
+  const [tours, setTours] = useState([]);
+  
+  useEffect(() => {
+    callApi(
+      `tour/getAllTour?search&skip&limit`,
+      "GET"
+    ).then((res) => {
+      console.log(res.data.data)
+      setTours(res.data.data);
+    });
+  }, []);
   
 
   const handleRequestSort = (event, property) => {
@@ -120,7 +184,7 @@ export default function BookTour() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = allBookTour.map((n) => n._id);
+      const newSelecteds = allDiscount.map((n) => n._id);
       setSelected(newSelecteds);
       return;
     }
@@ -158,11 +222,11 @@ export default function BookTour() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - allBookTour.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - allDiscount.length) : 0;
 
-  const filteredBookTour = applySortFilter(allBookTour, getComparator(order, orderBy), filterName);
+  const filteredDiscount = applySortFilter(allDiscount, getComparator(order, orderBy), filterName);
 
-  const isUserNotFound = filteredBookTour.length === 0;
+  const isUserNotFound = filteredDiscount.length === 0;
 
 
   return (
@@ -170,9 +234,17 @@ export default function BookTour() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Book Tour {allBookTour.length}
+            Discount {allDiscount.length}
           </Typography>
-          
+          <Button
+            variant="contained"
+            component={RouterLink}
+            to="#"
+            startIcon={<Icon icon={plusFill} />}
+            onClick={handleOpenAddDiscount}
+          >
+            New Discount 
+          </Button>
         </Stack>
 
         <Card>
@@ -189,16 +261,16 @@ export default function BookTour() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={allBookTour.length}
+                  rowCount={allDiscount.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredBookTour
+                  {filteredDiscount
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, finalpayment, status, startDate, endDate, idUser, idTour } = row;
+                      const { _id, nameTour, status, startDiscount, endDiscount, idTour, code, discount, imageTour } = row;
                       const isItemSelected = selected.indexOf(_id) !== -1;
 
                       return (
@@ -218,28 +290,27 @@ export default function BookTour() {
                           </TableCell>
                           <TableCell component="th" scope="row" padding="none" sx={{ maxWidth: 350 }}>
                             <Stack direction="row" alignItems="center" spacing={2}>
-                              <Avatar alt={_id} src={row.tour.imagesTour[0]} />                            
+                              <Avatar alt={_id} src={imageTour} />                            
                               <Typography variant="subtitle2" noWrap>
-                                {row.tour.name}                              
+                                {nameTour}                              
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell align="left" sx={{ maxWidth: 180 }}>{row.user.email}</TableCell>
-                          <TableCell align="left">{row.user.name}</TableCell>
-                          <TableCell align="left" >{finalpayment.toLocaleString('en-US')}  VNĐ</TableCell>
-                          <TableCell align="left" >{new Date(startDate).toISOString('vi-VN').slice(0, 10)}</TableCell>
-                          <TableCell align="left">{new Date(endDate).toISOString('vi-VN').slice(0, 10)}</TableCell>
+                          <TableCell align="left" >{code}</TableCell>
+                          <TableCell align="left">{discount} %</TableCell>                      
+                          <TableCell align="left" >{new Date(startDiscount).toISOString('vi-VN').slice(0, 10)}</TableCell>
+                          <TableCell align="left">{new Date(endDiscount).toISOString('vi-VN').slice(0, 10)}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
-                              color={(status == 1 && 'success') || (status == 2 && 'error') || 'info'}
+                              color={(status == 0 && 'success') ||  'error'}
                             >
-                              {(status == 1 && 'Đã Đặt') || (status == 2 && 'Đã Hủy') || 'Đang chờ'}
+                              {(status == 0 && 'Còn') || 'Đã Hủy'}
                             </Label>
                           </TableCell>
 
                           <TableCell align="right">
-                            <BookTourMenu id={_id} status={status}/>
+                            <DiscountMenu id={_id} status={status} discount={discount} code={code} idTour={idTour}/>
                           </TableCell>
                         </TableRow>
                       );
@@ -266,7 +337,7 @@ export default function BookTour() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={allBookTour.length}
+            count={allDiscount.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -275,6 +346,68 @@ export default function BookTour() {
         </Card>
       </Container>   
 
-    </Page>
+
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={openAddDiscount}
+        onClose={handleCloseAddDiscount}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 0,
+        }}
+      >
+        
+        <Fade in={openAddDiscount}>
+          <Box sx={style}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Edit discount
+            </Typography>
+
+            <Autocomplete
+              style={{marginTop: '10px'}}
+              id="free-solo-demo"
+              disableClearable             
+              options={tours.map((t) => t.name)}
+              renderInput={(params) => <TextField {...params} label="Eterprise" />}
+              onChange={(event, newValue) => {
+                tours.map((t) => {if(newValue == t.name) setIDTour(t._id) 
+                })
+                console.log(idTour)
+              }}
+            />
+
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Code" variant="outlined" value={code} onChange={(event)=>setCode(event.target.value)}/>               
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="number" label="Discount" variant="outlined" value={discount} onChange={(event)=>setDiscount(event.target.value)}/>
+          <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+          Start Discount:
+            </Typography>     
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="date"  variant="outlined" value={startDiscount} onChange={(event)=>setStartDiscount(event.target.value)}/>
+          <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+          End Discount:
+            </Typography> 
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="date"  variant="outlined" value={endDiscount} onChange={(event)=>setEndDiscount(event.target.value)}/>
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Kiểm tra trước khi nhấn save!
+            </Typography>
+
+
+            <Button
+            variant="contained"
+            component={RouterLink}
+            to="#"
+            startIcon={<Icon icon={plusFill} />}
+            onClick={clickAddDiscount}
+          >
+            Add
+          </Button>
+
+          </Box>
+        </Fade>
+      </Modal>
+
+
+    </Page> 
   );
 }

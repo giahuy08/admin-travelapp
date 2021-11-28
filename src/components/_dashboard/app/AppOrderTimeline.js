@@ -12,7 +12,8 @@ import {
 } from '@mui/lab';
 // utils
 import { fDateTime } from '../../../utils/formatTime';
-
+import callApi from 'src/api/apiService';
+import { useEffect, useState } from 'react';
 // ----------------------------------------------------------------------
 
 const TIMELINES = [
@@ -58,10 +59,14 @@ function OrderItem({ item, isLast }) {
         <TimelineDot
           sx={{
             bgcolor:
-              (type === 'order1' && 'primary.main') ||
-              (type === 'order2' && 'success.main') ||
-              (type === 'order3' && 'info.main') ||
-              (type === 'order4' && 'warning.main') ||
+              // (type === 'order1' && 'primary.main') ||
+              // (type === 1 && 'success.main') ||
+              // (type === 2 && 'info.main') ||
+              // (type === 0 && 'warning.main') ||
+              // 'error.main'
+              
+              (type === 1 && 'success.main') ||             
+              (type === 0 && 'warning.main') ||
               'error.main'
           }}
         />
@@ -78,6 +83,23 @@ function OrderItem({ item, isLast }) {
 }
 
 export default function AppOrderTimeline() {
+  const [data,setData] =useState([])
+  useEffect(async () => {
+    await callApi(
+      `statistic/getStatisticByData`,
+      "GET"
+    ).then((res) => {     
+      const place = res.data.data.listbooktour
+      const booktour =  place.map((row, a, n) => { return {
+        title: row.nameTour,
+        time: row.booktour.startDate,
+        type: row.booktour.status
+      } })
+      console.log(booktour)
+      setData(booktour)
+      
+    });
+  }, []);
   return (
     <Card
       sx={{
@@ -86,11 +108,11 @@ export default function AppOrderTimeline() {
         }
       }}
     >
-      <CardHeader title="Order Timeline" />
+      <CardHeader title="Book Tour Timeline" />
       <CardContent>
         <Timeline>
-          {TIMELINES.map((item, index) => (
-            <OrderItem key={item.title} item={item} isLast={index === TIMELINES.length - 1} />
+          {data && data.map((item, index) => (
+            <OrderItem key={item.title} item={item} isLast={index === data.length - 1} />
           ))}
         </Timeline>
       </CardContent>
