@@ -37,6 +37,11 @@ const sidebarConfig = [
     path: '/dashboard/discount',
     icon: getIcon(fileTextFill)
   },
+  {
+    title: 'Vehicle',
+    path: '/dashboard/vehicle',
+    icon: getIcon(fileTextFill)
+  },
   // {
   //   title: 'product',
   //   path: '/dashboard/products',

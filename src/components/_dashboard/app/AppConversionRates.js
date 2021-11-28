@@ -18,8 +18,8 @@ export default function AppConversionRates() {
   const [name,setName] =useState([])
  
   console.log(data)
-  useEffect(async () => {
-    await callApi(
+  useEffect( () => {
+     callApi(
       `statistic/getStatisticByData`,
       "GET"
     ).then((res) => {

@@ -14,6 +14,7 @@ import BookTour from './pages/BookTour';
 
 import NotFound from './pages/Page404';
 import Discount from './pages/Discount';
+import Vehicle from './pages/Vehicle';
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +42,8 @@ export default function Router() {
         { path: 'blog', element: <Blog /> },
         { path: 'tour', element: < Tour/>},
         { path: 'booktour', element: < BookTour/>},
-        { path: 'discount', element: < Discount/>}
+        { path: 'discount', element: < Discount/>},
+        { path: 'vehicle', element: < Vehicle/>}
       ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }

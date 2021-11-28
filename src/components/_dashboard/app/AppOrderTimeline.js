@@ -84,8 +84,8 @@ function OrderItem({ item, isLast }) {
 
 export default function AppOrderTimeline() {
   const [data,setData] =useState([])
-  useEffect(async () => {
-    await callApi(
+  useEffect(() => {
+     callApi(
       `statistic/getStatisticByData`,
       "GET"
     ).then((res) => {     
