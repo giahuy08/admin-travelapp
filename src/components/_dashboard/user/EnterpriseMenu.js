@@ -55,100 +55,38 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function VehicleMenu(props) {
+export default function EnterpriseMenu(props) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = React.useState(props.type);
   const [openEditTour, setOpenEditTour] = React.useState(false);
   const handleOpenEditTour = () => setOpenEditTour(true);
   const handleCloseEditTour = () => setOpenEditTour(false);
-  const [ImagesVehicle, setImagesVehicle] = React.useState([]);
-  const [enterprise, setEnterprise] = React.useState([]);
-  const [idEnterprise, setIDEnterprise] = React.useState(props.idEnterprise);
-
-  const [vehicle, setVehicle] = React.useState([]);
-  const [idVehicles, setidVehicles] = React.useState(props.idVehicles);
 
   const [name, setName] = React.useState(props.name);
-  const [vehicleNumber, setVehicleNumber] = React.useState(props.vehicleNumber);
   const [detail, setDetail] = React.useState(props.detail);
-  const [payment, setPayment] = React.useState(props.payment);
-  const [time, setTime] = React.useState(props.time);
   const [ImagesTour, setImagesTour] = React.useState();
   const [deleted, setDeleted] = useState(props.deleted);
 
-  const [category, setCategory] = React.useState(props.category);
-  const [openCategory, setOpenCategory] = React.useState(false);
 
   const handleChangeCategory = (event) => {
     setType(event.target.value);
   };
-
-  const handleCloseCategory = () => {
-    setOpenCategory(false);
-  };
-
-  const handleOpenCategory = () => {
-    setOpenCategory(true);
-  };
-
-  
-  useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        "http://localhost:5000/enterprise/getAllEnterprise",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("accessToken"),
-          },
-        }
-      );
-
-      const content = await response.json();
-      setEnterprise(content.data);
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        "http://localhost:5000/vehicle/getAllVehicle",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("accessToken"),
-          },
-        }
-      );
-
-      const content = await response.json();
-      setVehicle(content.data);
-    })();
-  }, []);
+ 
 
   const clickEditTour = async () => {
-    console.log({
-      idEnterprise,
-      idVehicles,
+    console.log({  
       name,
-      vehicleNumber,
       detail,
-      payment,
       ImagesTour,
-      category,
-      time,
     });
 
-    let link = "http://localhost:5000/vehicle/updateVehicle";
+    let link = "http://localhost:5000/enterprise/updateEnterprise";
     let  editvehicle = new FormData();
   editvehicle.append("id", props.id);
   editvehicle.append("name", name);
-  editvehicle.append("type", type);
-  editvehicle.append("vehicleNumber", vehicleNumber);
-   editvehicle.append("ImagesVehicle", ImagesVehicle);
+  editvehicle.append("detail", detail);
+   editvehicle.append("Logo", ImagesTour);
     const response = await fetch(link, {
       method: "PUT",
       headers: {
@@ -169,7 +107,7 @@ export default function VehicleMenu(props) {
   const handleDeleteVehicle = () => {
     console.log(localStorage.getItem("accessToken"));
 
-    callApi(`vehicle/deleteForceVehicle?id=${props.id}`, "DELETE")
+    callApi(`enterprise/deleteForceEnterprise?id=${props.id}`, "DELETE")
       .then((res) => {
         console.log(res);
         window.location.reload();
@@ -182,7 +120,7 @@ export default function VehicleMenu(props) {
   const handleBlockTour = () => {
     console.log(localStorage.getItem("accessToken"));
 
-    callApi(`tour/deleteTour?id=${props.id}`, "DELETE")
+    callApi(`enterprise/deleteEnterprise?id=${props.id}`, "DELETE")
       .then((res) => {
         console.log(res);
         window.location.reload();
@@ -284,95 +222,26 @@ export default function VehicleMenu(props) {
         <Fade in={openEditTour}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
-              Edit Vehicle
+              Edit Enterprise
             </Typography>
 
-            {/* <Autocomplete
-              style={{marginTop: '10px'}}
-              id="free-solo-demo"
-              disableClearable             
-              options={enterprise.map((enterprise) => enterprise.name)}
-              renderInput={(params) => <TextField {...params} label="Eterprise" />}
-              onChange={(event, newValue) => {
-                enterprise.map((enterprise) => {if(newValue == enterprise.name) setIDEnterprise(enterprise._id) 
-                })
-                console.log(idEnterprise)
-              }}
-            />
+            
 
-          <Autocomplete
-            style={{marginTop: '10px'}}
-            id="free-solo-demo"
-            disableClearable 
-            options={vehicle.map((vehicle) => vehicle.name)}
-            renderInput={(params) => <TextField {...params} label="Vehicle" />}
-            onChange={(event, newValue) => {
-              vehicle.map((vehicle) => {if(newValue == vehicle.name) setidVehicles(vehicle._id) 
-              })
-              console.log(idVehicles)
-            }}
-          /> */}
+        <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Name" variant="outlined" value={name} onChange={(event)=>setName(event.target.value)}/>
+        <TextField style={{marginTop: '10px', width: '100%'}} multiline rows={2} id="outlined-basic" label="Detail" variant="outlined" value={detail} onChange={(event)=>setDetail(event.target.value)}/>
+        <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Logo:
+            </Typography>
 
-            <TextField
-              style={{ marginTop: "10px", width: "100%" }}
-              id="outlined-basic"
-              label="Name"
-              variant="outlined"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-            <TextField
-              style={{ marginTop: "10px", width: "100%" }}
-              id="outlined-basic"
-              label="VehicleNumber"
-              variant="outlined"
-              value={vehicleNumber}
-              onChange={(event) => setVehicleNumber(event.target.value)}
-            />
-         
-
-            <FormControl sx={{ marginTop: "10px", width: "100%" }}>
-              <InputLabel id="demo-controlled-open-select-label">
-                Loại
-              </InputLabel>
-              <Select
-                labelId="demo-controlled-open-select-label"
-                id="demo-controlled-open-select"
-                open={openCategory}
-                onClose={handleCloseCategory}
-                onOpen={handleOpenCategory}
-                value={type}
-                label="Age"
-                onChange={handleChangeCategory}
-              >
-                <MenuItem value={0}>
-                  <em>Ôtô</em>
-                </MenuItem>
-                <MenuItem value={1}>Xe bus</MenuItem>
-                <MenuItem value={2}>Tàu</MenuItem>
-                <MenuItem value={3}>Máy bay</MenuItem>
-         
-              </Select>
-            </FormControl>
-
-         
-
-            <div class="input-file">
-              <input
-                type="file"
-                name="file"
-                id="file"
-                onChange={(event) => setImagesVehicle(event.target.files[0])}
-              />
-              <label for="file" class="input-label">
-                <i class="fas fa-cloud-upload-alt icon-upload">
-                  <CloudUploadIcon />
-                </i>
-              </label>
-            </div>
+        <div class="input-file">
+        <input type="file" name="file" id="file" onChange={(event)=>setImagesTour(event.target.files[0])}/>
+        <label for="file" class="input-label">
+          <i class="fas fa-cloud-upload-alt icon-upload"><CloudUploadIcon/></i>
+        </label>
+      </div>
 
             <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Kiểm tra thông tin nha!
+              Kiểm tra trước khi lưu!
             </Typography>
 
             <Button

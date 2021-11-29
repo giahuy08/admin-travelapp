@@ -50,7 +50,7 @@ export default function LoginForm() {
         })
         .catch((err) => {
           window.alert('Sai mật khẩu hoặc email !')
-            console.log(err);
+          console.log(err);
         });
     }
   }

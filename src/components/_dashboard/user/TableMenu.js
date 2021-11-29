@@ -55,121 +55,92 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function VehicleMenu(props) {
+export default function RoomMenu(props) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = React.useState(props.type);
   const [openEditTour, setOpenEditTour] = React.useState(false);
   const handleOpenEditTour = () => setOpenEditTour(true);
   const handleCloseEditTour = () => setOpenEditTour(false);
-  const [ImagesVehicle, setImagesVehicle] = React.useState([]);
+
   const [enterprise, setEnterprise] = React.useState([]);
   const [idEnterprise, setIDEnterprise] = React.useState(props.idEnterprise);
 
-  const [vehicle, setVehicle] = React.useState([]);
-  const [idVehicles, setidVehicles] = React.useState(props.idVehicles);
 
   const [name, setName] = React.useState(props.name);
-  const [vehicleNumber, setVehicleNumber] = React.useState(props.vehicleNumber);
+  const [size, setSize] = React.useState(props.size);
+  const [floor, setFloor] = React.useState(props.floor);
   const [detail, setDetail] = React.useState(props.detail);
-  const [payment, setPayment] = React.useState(props.payment);
-  const [time, setTime] = React.useState(props.time);
-  const [ImagesTour, setImagesTour] = React.useState();
-  const [deleted, setDeleted] = useState(props.deleted);
+  const [checkIn, setCheckIn] = React.useState(props.checkIn);
+  const [price, setPrice] = React.useState(props.price);
+  const [checkOut, setCheckOut] = React.useState(props.checkOut);
+  const [deleted, setDeleted] = React.useState(props.deleted);
+  const [id, setId] = React.useState(props.id);
 
-  const [category, setCategory] = React.useState(props.category);
-  const [openCategory, setOpenCategory] = React.useState(false);
+  useEffect(() => {
+    (       
+            async () => {
+
+            const response = await fetch('http://localhost:5000/enterprise/getAllEnterprise',{
+                method: 'GET',
+                headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
+            });
+            
+            const content = await response.json();            
+            setEnterprise(content.data)
+      }    
+    )();
+},[])
+
 
   const handleChangeCategory = (event) => {
     setType(event.target.value);
   };
-
-  const handleCloseCategory = () => {
-    setOpenCategory(false);
-  };
-
-  const handleOpenCategory = () => {
-    setOpenCategory(true);
-  };
-
-  
-  useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        "http://localhost:5000/enterprise/getAllEnterprise",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("accessToken"),
-          },
-        }
-      );
-
-      const content = await response.json();
-      setEnterprise(content.data);
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        "http://localhost:5000/vehicle/getAllVehicle",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("accessToken"),
-          },
-        }
-      );
-
-      const content = await response.json();
-      setVehicle(content.data);
-    })();
-  }, []);
+ 
 
   const clickEditTour = async () => {
     console.log({
-      idEnterprise,
-      idVehicles,
-      name,
-      vehicleNumber,
-      detail,
-      payment,
-      ImagesTour,
-      category,
-      time,
-    });
-
-    let link = "http://localhost:5000/vehicle/updateVehicle";
-    let  editvehicle = new FormData();
-  editvehicle.append("id", props.id);
-  editvehicle.append("name", name);
-  editvehicle.append("type", type);
-  editvehicle.append("vehicleNumber", vehicleNumber);
-   editvehicle.append("ImagesVehicle", ImagesVehicle);
-    const response = await fetch(link, {
-      method: "PUT",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("accessToken"),
-      },
-      body:editvehicle,
-    });
-    const content = await response.json();
-    console.log(content.data);
-    if (content.data) {
-      window.confirm("Save thành công !");
-      window.location.reload();
-    } else {
-      window.alert("Thất bại !");
-    }
+        idEnterprise,
+        name,
+        size,
+        floor,
+        detail,
+        price,
+        checkIn,
+        checkOut
+      })
+    
+      let link = 'http://localhost:5000/restauranttable/updateRestaurantTable'
+      
+      const response = await fetch(link, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem("accessToken")},
+          body : JSON.stringify({
+            id,
+            idEnterprise,
+            name,
+            size,
+            floor,
+            detail,
+            price,
+            checkIn,
+            checkOut
+          })
+      });
+      const content = await response.json();
+      console.log(content.data)
+      if(content.data){
+        window.confirm('Thành công !')
+        window.location.reload()
+      }else {
+        window.alert('Thất bại !')
+      }
   };
 
   const handleDeleteVehicle = () => {
     console.log(localStorage.getItem("accessToken"));
 
-    callApi(`vehicle/deleteForceVehicle?id=${props.id}`, "DELETE")
+    callApi(`restauranttable/deleteForceRestaurantTable?id=${props.id}`, "DELETE")
       .then((res) => {
         console.log(res);
         window.location.reload();
@@ -182,7 +153,7 @@ export default function VehicleMenu(props) {
   const handleBlockTour = () => {
     console.log(localStorage.getItem("accessToken"));
 
-    callApi(`tour/deleteTour?id=${props.id}`, "DELETE")
+    callApi(`restauranttable/deleteRestaurantTable?id=${props.id}`, "DELETE")
       .then((res) => {
         console.log(res);
         window.location.reload();
@@ -284,14 +255,17 @@ export default function VehicleMenu(props) {
         <Fade in={openEditTour}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
-              Edit Vehicle
+              Edit Table
             </Typography>
 
-            {/* <Autocomplete
+            
+
+            <Autocomplete
+              value={enterprise.map((e) => {if(idEnterprise == e._id) return (e.name)})}                     
               style={{marginTop: '10px'}}
               id="free-solo-demo"
               disableClearable             
-              options={enterprise.map((enterprise) => enterprise.name)}
+              options={enterprise.map((e) => e.name)}
               renderInput={(params) => <TextField {...params} label="Eterprise" />}
               onChange={(event, newValue) => {
                 enterprise.map((enterprise) => {if(newValue == enterprise.name) setIDEnterprise(enterprise._id) 
@@ -300,79 +274,18 @@ export default function VehicleMenu(props) {
               }}
             />
 
-          <Autocomplete
-            style={{marginTop: '10px'}}
-            id="free-solo-demo"
-            disableClearable 
-            options={vehicle.map((vehicle) => vehicle.name)}
-            renderInput={(params) => <TextField {...params} label="Vehicle" />}
-            onChange={(event, newValue) => {
-              vehicle.map((vehicle) => {if(newValue == vehicle.name) setidVehicles(vehicle._id) 
-              })
-              console.log(idVehicles)
-            }}
-          /> */}
+          
 
-            <TextField
-              style={{ marginTop: "10px", width: "100%" }}
-              id="outlined-basic"
-              label="Name"
-              variant="outlined"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-            <TextField
-              style={{ marginTop: "10px", width: "100%" }}
-              id="outlined-basic"
-              label="VehicleNumber"
-              variant="outlined"
-              value={vehicleNumber}
-              onChange={(event) => setVehicleNumber(event.target.value)}
-            />
-         
-
-            <FormControl sx={{ marginTop: "10px", width: "100%" }}>
-              <InputLabel id="demo-controlled-open-select-label">
-                Loại
-              </InputLabel>
-              <Select
-                labelId="demo-controlled-open-select-label"
-                id="demo-controlled-open-select"
-                open={openCategory}
-                onClose={handleCloseCategory}
-                onOpen={handleOpenCategory}
-                value={type}
-                label="Age"
-                onChange={handleChangeCategory}
-              >
-                <MenuItem value={0}>
-                  <em>Ôtô</em>
-                </MenuItem>
-                <MenuItem value={1}>Xe bus</MenuItem>
-                <MenuItem value={2}>Tàu</MenuItem>
-                <MenuItem value={3}>Máy bay</MenuItem>
-         
-              </Select>
-            </FormControl>
-
-         
-
-            <div class="input-file">
-              <input
-                type="file"
-                name="file"
-                id="file"
-                onChange={(event) => setImagesVehicle(event.target.files[0])}
-              />
-              <label for="file" class="input-label">
-                <i class="fas fa-cloud-upload-alt icon-upload">
-                  <CloudUploadIcon />
-                </i>
-              </label>
-            </div>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" label="Name" variant="outlined" value={name} onChange={(event)=>setName(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="number" label="Size" variant="outlined" value={size} onChange={(event)=>setSize(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="number" label="Floor" variant="outlined" value={floor} onChange={(event)=>setFloor(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} multiline rows={2} id="outlined-basic" label="Detail" variant="outlined" value={detail} onChange={(event)=>setDetail(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="number" label="Price(VNĐ)" variant="outlined" value={price} onChange={(event)=>setPrice(event.target.value)}/>
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="date" label="" variant="outlined" value={(checkIn != null && new Date(checkIn).toISOString('vi-VN').slice(0, 10)) || ''} onChange={(event)=>setCheckIn(event.target.value)}/>        
+          <TextField style={{marginTop: '10px', width: '100%'}} id="outlined-basic" type="date" label="" variant="outlined" value={(checkOut != null && new Date(checkOut).toISOString('vi-VN').slice(0, 10)) || ''} onChange={(event)=>setCheckOut(event.target.value)}/>
 
             <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Kiểm tra thông tin nha!
+              Kiểm tra trước khi lưu!
             </Typography>
 
             <Button

@@ -15,6 +15,9 @@ import BookTour from './pages/BookTour';
 import NotFound from './pages/Page404';
 import Discount from './pages/Discount';
 import Vehicle from './pages/Vehicle';
+import Enterprise from './pages/Enterprise';
+import HotelRoom from './pages/HotelRoom';
+import RestaurantTable from './pages/RestaurantTable';
 
 // ----------------------------------------------------------------------
 
@@ -43,7 +46,10 @@ export default function Router() {
         { path: 'tour', element: < Tour/>},
         { path: 'booktour', element: < BookTour/>},
         { path: 'discount', element: < Discount/>},
-        { path: 'vehicle', element: < Vehicle/>}
+        { path: 'vehicle', element: < Vehicle/>},
+        { path: 'enterprise', element: < Enterprise/>},
+        { path: 'room', element: < HotelRoom/>},
+        { path: 'table', element: < RestaurantTable/>},
       ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }

@@ -42,6 +42,21 @@ const sidebarConfig = [
     path: '/dashboard/vehicle',
     icon: getIcon(fileTextFill)
   },
+  {
+    title: 'Enterprise',
+    path: '/dashboard/enterprise',
+    icon: getIcon(fileTextFill)
+  },
+  {
+    title: 'Room',
+    path: '/dashboard/room',
+    icon: getIcon(fileTextFill)
+  },
+  {
+    title: 'Table',
+    path: '/dashboard/table',
+    icon: getIcon(fileTextFill)
+  },
   // {
   //   title: 'product',
   //   path: '/dashboard/products',
