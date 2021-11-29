@@ -303,7 +303,7 @@ export default function Vehicle() {
             startIcon={<Icon icon={plusFill} />}
             onClick={handleOpenAddTour}
           >
-            New Tour
+            New Vehicle
           </Button>
         </Stack>
 
