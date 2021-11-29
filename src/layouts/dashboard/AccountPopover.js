@@ -11,7 +11,7 @@ import { Button, Box, Divider, MenuItem, Typography, Avatar, IconButton } from '
 import MenuPopover from '../../components/MenuPopover';
 //
 import account from '../../_mocks_/account';
-
+import {useNavigate } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
@@ -31,15 +31,17 @@ const MENU_OPTIONS = [
     linkTo: '#'
   }
 ];
-const clickLogout = () => {
 
-}
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
-
+  const navigate = useNavigate();
+  const clickLogout = (e) => {
+    e.preventDefault();
+    navigate('/dashboard');
+  }
   const handleOpen = () => {
     setOpen(true);
   };
