@@ -370,7 +370,7 @@ export default function Discount() {
               id="free-solo-demo"
               disableClearable             
               options={tours.map((t) => t.name)}
-              renderInput={(params) => <TextField {...params} label="Eterprise" />}
+              renderInput={(params) => <TextField {...params} label="Tour" />}
               onChange={(event, newValue) => {
                 tours.map((t) => {if(newValue == t.name) setIDTour(t._id) 
                 })
