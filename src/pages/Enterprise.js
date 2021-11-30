@@ -154,7 +154,7 @@ const clickAddEnterprise = async () =>{
     category,
   })
 
-  let link = 'http://localhost:5000/enterprise/createEnterprise'
+  let link = 'https://app-travelbe.herokuapp.com/enterprise/createEnterprise'
   let addtour = new FormData()
   addtour.append('name', name)
   addtour.append('detail', detail)

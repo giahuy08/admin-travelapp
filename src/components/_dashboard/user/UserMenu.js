@@ -84,7 +84,7 @@ const clickEditUser = async () =>{
           verify
   })
 
-  let link = 'http://localhost:5000/admin/updateUser' 
+  let link = 'https://app-travelbe.herokuapp.com/admin/updateUser' 
   const response = await fetch(link, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json', "Authorization": "Bearer " + localStorage.getItem("accessToken")},

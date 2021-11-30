@@ -93,7 +93,7 @@ export default function UserMoreMenu(props) {
     (       
             async () => {
 
-            const response = await fetch('http://localhost:5000/enterprise/getAllEnterprise',{
+            const response = await fetch('https://app-travelbe.herokuapp.com/enterprise/getAllEnterprise',{
                 method: 'GET',
                 headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
             });
@@ -110,7 +110,7 @@ useEffect(() => {
   (       
           async () => {
 
-          const response = await fetch('http://localhost:5000/vehicle/getAllVehicle',{
+          const response = await fetch('https://app-travelbe.herokuapp.com/vehicle/getAllVehicle',{
               method: 'GET',
               headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
           });
@@ -134,7 +134,7 @@ const clickEditTour = async () =>{
     time
   })
 
-  let link = 'http://localhost:5000/tour/updateTour'
+  let link = 'https://app-travelbe.herokuapp.com/tour/updateTour'
   let addtour = new FormData()
   addtour.append('id', props.id)
   addtour.append('idEnterprise', idEnterprise)

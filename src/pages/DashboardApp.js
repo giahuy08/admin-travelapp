@@ -84,7 +84,7 @@ export default function DashboardApp() {
 
 
     });
-    //   const link = 'http://localhost:5000/statistic/getStatisticByBookTour?timeStart='+new Date(value[0])+'&timeEnd='+new Date(value[1])
+    //   const link = 'https://app-travelbe.herokuapp.com/statistic/getStatisticByBookTour?timeStart='+new Date(value[0])+'&timeEnd='+new Date(value[1])
     //   const response = await fetch(link, {
     //     method: 'GET',
     //     headers: {"Authorization": "Bearer " + localStorage.getItem("accessToken")}

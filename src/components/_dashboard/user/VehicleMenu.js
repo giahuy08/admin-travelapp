@@ -96,7 +96,7 @@ export default function VehicleMenu(props) {
   useEffect(() => {
     (async () => {
       const response = await fetch(
-        "http://localhost:5000/enterprise/getAllEnterprise",
+        "https://app-travelbe.herokuapp.com/enterprise/getAllEnterprise",
         {
           method: "GET",
           headers: {
@@ -114,7 +114,7 @@ export default function VehicleMenu(props) {
   useEffect(() => {
     (async () => {
       const response = await fetch(
-        "http://localhost:5000/vehicle/getAllVehicle",
+        "https://app-travelbe.herokuapp.com/vehicle/getAllVehicle",
         {
           method: "GET",
           headers: {
@@ -142,7 +142,7 @@ export default function VehicleMenu(props) {
       time,
     });
 
-    let link = "http://localhost:5000/vehicle/updateVehicle";
+    let link = "https://app-travelbe.herokuapp.com/vehicle/updateVehicle";
     let  editvehicle = new FormData();
   editvehicle.append("id", props.id);
   editvehicle.append("name", name);

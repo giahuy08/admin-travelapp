@@ -158,7 +158,7 @@ export default function HotelRoom() {
     (       
             async () => {
 
-            const response = await fetch('http://localhost:5000/enterprise/getAllEnterprise',{
+            const response = await fetch('https://app-travelbe.herokuapp.com/enterprise/getAllEnterprise',{
                 method: 'GET',
                 headers: {'Content-Type': 'application/json',  "Authorization":"Bearer " + localStorage.getItem("accessToken")}
             });
@@ -187,7 +187,7 @@ const clickAddTour = async () =>{
         checkOut
       })
     
-      let link = 'http://localhost:5000/hotelroom/createHotelRoom'
+      let link = 'https://app-travelbe.herokuapp.com/hotelroom/createHotelRoom'
       
       const response = await fetch(link, {
           method: 'POST',
