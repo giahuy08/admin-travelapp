@@ -260,7 +260,7 @@ const clickEditTour = async () =>{
         }}
       >
         
-        <Fade in={openEditTour}>
+        <Fade in={openEditTour}  style={{height:'90%',overflowY:'scroll'}}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Edit Tour

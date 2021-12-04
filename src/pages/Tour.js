@@ -425,11 +425,12 @@ const clickAddTour = async () =>{
         onClose={handleCloseAddTour}
         closeAfterTransition
         BackdropComponent={Backdrop}
+      
         BackdropProps={{
-          timeout: 500,
+          timeout: 400,
         }}
       >
-        <Fade in={openAddTour}>
+        <Fade in={openAddTour}   style={{height:'90%',overflowY:'scroll'}}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Add New Tour
